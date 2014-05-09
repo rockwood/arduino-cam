@@ -1,3 +1,4 @@
+#include <Lanc.h>
 
 const int JOY_STICK_PIN_X = A0;
 const int JOY_STICK_PIN_Y = A1;
@@ -10,6 +11,8 @@ const int PAN_TILT_PIN_RIGHT = 6;
 const int LANC_WRITE_PIN = 2;
 const int LANC_READ_PIN = 3;
 const int POT_PIN = A2;
+
+Lanc lanc(LANC_READ_PIN, LANC_WRITE_PIN);
 
 int cmdRepeatCount = 5;
 int bitDuration = 104; //Duration of one LANC bit in microseconds. 
@@ -64,11 +67,11 @@ void loop()  {
   int currentPot = readPot(POT_PIN);
   
   if (currentPot > 100) {
-    writeLancPair(lancX2, lancZoomIn4);
+    lanc.writePair(lancX2, lancZoomIn4);
   }
   
   else if (currentPot < -100) {
-    writeLancPair(lancX2, lancZoomOut4);
+    lanc.writePair(lancX2, lancZoomOut4);
   }
   
    delay(responseDelay);
@@ -100,43 +103,4 @@ int readAxis(int pin) {
   // return the distance for this axis:
   return distance;
 }
-
-void writeLancPair(byte command1, byte command2) {
-  for (int i = 0; i < cmdRepeatCount; i++) {  //repeat to make sure the camera accepts the command
-
-    while (pulseIn(LANC_READ_PIN, HIGH) < 5000) { }
-    
-    delayMicroseconds(bitDuration);  //wait START bit duration
-    
-    writeLancByte(command1);
-
-    //Byte 0 is written now put LANC line back to +5V
-    digitalWrite(LANC_WRITE_PIN, LOW);
-    delayMicroseconds(10); //make sure to be in the stop bit before byte 1
-    
-    while (digitalRead(LANC_READ_PIN)) { }
-
-    //0V after the previous stop bit means the START bit of Byte 1 is here
-    delayMicroseconds(bitDuration);  //wait START bit duration
-    
-    writeLancByte(command2);
-    
-    //Byte 1 is written now put LANC line back to +5V
-    digitalWrite(LANC_WRITE_PIN, LOW); 
-  }
-}
-
-void writeLancByte(byte command) {
- byte bitmask;
- for (bitmask = 1; bitmask > 0; bitmask <<= 1) {
-    if (command & bitmask){
-      digitalWrite(LANC_WRITE_PIN, HIGH);
-    }
-    else{ 
-      digitalWrite(LANC_WRITE_PIN, LOW);
-    }
-    delayMicroseconds(bitDuration);
-  } 
-}
-
 
