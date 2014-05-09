@@ -14,8 +14,9 @@ const int POT_PIN = A2;
 int cmdRepeatCount = 5;
 int bitDuration = 104; //Duration of one LANC bit in microseconds. 
 
-boolean ZOOM_IN_4[] = {LOW,LOW,HIGH,LOW,HIGH,LOW,LOW,LOW,   LOW,LOW,LOW,LOW,HIGH,LOW,LOW,LOW}; //28 08
-boolean ZOOM_OUT_4[] = {LOW,LOW,HIGH,LOW,HIGH,LOW,LOW,LOW,   LOW,LOW,LOW,HIGH,HIGH,LOW,LOW,LOW}; //28 18
+byte lancX2 = 0x28;
+byte lancZoomIn4 = 0x08;
+byte lancZoomOut4 = 0x18;
 
 int responseDelay = 20;
  
@@ -63,11 +64,11 @@ void loop()  {
   int currentPot = readPot(POT_PIN);
   
   if (currentPot > 100) {
-    lancCommand(ZOOM_IN_4);
+    writeLancPair(lancX2, lancZoomIn4);
   }
   
   else if (currentPot < -100) {
-    lancCommand(ZOOM_OUT_4);
+    writeLancPair(lancX2, lancZoomOut4);
   }
   
    delay(responseDelay);
@@ -100,53 +101,42 @@ int readAxis(int pin) {
   return distance;
 }
 
-void lancCommand(boolean lancBit[]) {
-  cmdRepeatCount = 0;
+void writeLancPair(byte command1, byte command2) {
+  for (int i = 0; i < cmdRepeatCount; i++) {  //repeat to make sure the camera accepts the command
 
-  while (cmdRepeatCount < 5) {  //repeat 5 times to make sure the camera accepts the command
-
-    while (pulseIn(LANC_READ_PIN, HIGH) < 5000) {   
-      //"pulseIn, HIGH" catches any 0V TO +5V TRANSITION and waits until the LANC line goes back to 0V 
-      //"pulseIn" also returns the pulse duration so we can check if the previous +5V duration was long enough (>5ms) to be the pause before a new 8 byte data packet
-      //Loop till pulse duration is >5ms
-    }
+    while (pulseIn(LANC_READ_PIN, HIGH) < 5000) { }
     
-    //LOW after long pause means the START bit of Byte 0 is here
     delayMicroseconds(bitDuration);  //wait START bit duration
     
-    //Write the 8 bits of byte 0 
-    //Note that the command bits have to be put out in reverse order with the least significant, right-most bit (bit 0) first
-    for (int i=7; i>-1; i--) {
-      digitalWrite(LANC_WRITE_PIN, lancBit[i]);  //Write bits. 
-      delayMicroseconds(bitDuration); 
-    }
-   
+    writeLancByte(command1);
+
     //Byte 0 is written now put LANC line back to +5V
     digitalWrite(LANC_WRITE_PIN, LOW);
     delayMicroseconds(10); //make sure to be in the stop bit before byte 1
     
-    while (digitalRead(LANC_READ_PIN)) { 
-      //Loop as long as the LANC line is +5V during the stop bit
-    }
+    while (digitalRead(LANC_READ_PIN)) { }
 
     //0V after the previous stop bit means the START bit of Byte 1 is here
     delayMicroseconds(bitDuration);  //wait START bit duration
-      
-    //Write the 8 bits of Byte 1
-    //Note that the command bits have to be put out in reverse order with the least significant, right-most bit (bit 0) first
-    for (int i=15; i>7; i--) {
-      digitalWrite(LANC_WRITE_PIN,lancBit[i]);  //Write bits 
-      delayMicroseconds(bitDuration);
-    }
- 
+    
+    writeLancByte(command2);
+    
     //Byte 1 is written now put LANC line back to +5V
     digitalWrite(LANC_WRITE_PIN, LOW); 
+  }
+}
 
-    cmdRepeatCount++;  //increase repeat count by 1
-   
-    // Control bytes 0 and 1 are written, now don’t care what happens in Bytes 2 to 7
-    // and just wait for the next start bit after a long pause to send the first two command bytes again.
-  }//While cmdRepeatCount < 5
+void writeLancByte(byte command) {
+ byte bitmask;
+ for (bitmask = 1; bitmask > 0; bitmask <<= 1) {
+    if (command & bitmask){
+      digitalWrite(LANC_WRITE_PIN, HIGH);
+    }
+    else{ 
+      digitalWrite(LANC_WRITE_PIN, LOW);
+    }
+    delayMicroseconds(bitDuration);
+  } 
 }
 
 
