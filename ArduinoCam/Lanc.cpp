@@ -1,8 +1,8 @@
 /*
-  Morse.cpp - Library for flashing Morse code.
-  Created by David A. Mellis, November 2, 2007.
-  Released into the public domain.
-*/
+ Morse.cpp - Library for flashing Morse code.
+ Created by David A. Mellis, November 2, 2007.
+ Released into the public domain.
+ */
 
 #include "Arduino.h"
 #include "Lanc.h"
@@ -20,22 +20,22 @@ Lanc::Lanc(int readPin, int writePin) {
 void Lanc::writePair(byte command1, byte command2) {
   for (int i = 0; i < REPEAT_COUNT; i++) {  //repeat to make sure the camera accepts the command
     while (pulseIn(_readPin, HIGH) < 5000) { }
-
+    
     delayMicroseconds(BIT_DURATION);  //wait START bit duration
-
+    
     writeByte(command1);
-
+    
     //Byte 0 is written now put LANC line back to +5V
     digitalWrite(_writePin, LOW);
     delayMicroseconds(10); //make sure to be in the stop bit before byte 1
-
+    
     while (digitalRead(_readPin)) { }
-
+    
     //0V after the previous stop bit means the START bit of Byte 1 is here
     delayMicroseconds(BIT_DURATION);  //wait START bit duration
-
+    
     writeByte(command2);
-
+    
     //Byte 1 is written now put LANC line back to +5V
     digitalWrite(_writePin, LOW);
   }

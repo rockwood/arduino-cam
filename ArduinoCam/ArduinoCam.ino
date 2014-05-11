@@ -1,4 +1,4 @@
-#include <Lanc.h>
+#include "Lanc.h"
 
 const int JOY_STICK_PIN_X = A0;
 const int JOY_STICK_PIN_Y = A1;
@@ -15,14 +15,41 @@ const int POT_PIN = A2;
 Lanc lanc(LANC_READ_PIN, LANC_WRITE_PIN);
 
 int cmdRepeatCount = 5;
-int bitDuration = 104; //Duration of one LANC bit in microseconds. 
+int bitDuration = 104; //Duration of one LANC bit in microseconds.
 
 byte lancX2 = 0x28;
 byte lancZoomIn4 = 0x08;
 byte lancZoomOut4 = 0x18;
 
 int responseDelay = 20;
- 
+
+int readPot(int pin) {
+  int range = 510;
+  int center = range/2;
+  int reading = analogRead(pin);
+  reading = map(reading, 0, 1023, 0, range);
+  int distance = reading - center;
+  return distance;
+}
+
+int readAxis(int pin) {
+  int range = 510;
+  int threshold = 55;
+  int center = range/2;
+  int reading = analogRead(pin);
+  
+  reading = map(reading, 0, 1023, 0, range);
+  
+  int distance = reading - center;
+  
+  if (abs(distance) < threshold) {
+    distance = 0;
+  }
+  
+  // return the distance for this axis:
+  return distance;
+}
+
 void setup() {
   pinMode(LANC_READ_PIN, INPUT); //listens to the LANC line
   pinMode(LANC_WRITE_PIN, OUTPUT); //writes to the LANC line
@@ -32,12 +59,12 @@ void setup() {
   
   Serial.begin(115200);
 }
- 
+
 void loop()  {
   // Pan/Tilt
   int currentJoystickX = readAxis(JOY_STICK_PIN_X);
   int currentJoystickY = readAxis(JOY_STICK_PIN_Y);
- 
+  
   if (currentJoystickX > 0) {
     analogWrite(PAN_TILT_PIN_RIGHT, abs(currentJoystickX));
     analogWrite(PAN_TILT_PIN_LEFT, 0);
@@ -74,33 +101,6 @@ void loop()  {
     lanc.writePair(lancX2, lancZoomOut4);
   }
   
-   delay(responseDelay);
-}
-
-int readPot(int pin) {
-  int range = 510;
-  int center = range/2;
-  int reading = analogRead(pin);
-  reading = map(reading, 0, 1023, 0, range);
-  int distance = reading - center;
-  return distance;
-}
-
-int readAxis(int pin) {
-  int range = 510;
-  int threshold = 55;
-  int center = range/2;
-  int reading = analogRead(pin);
-
-  reading = map(reading, 0, 1023, 0, range);
-
-  int distance = reading - center;
-  
-  if (abs(distance) < threshold) {
-    distance = 0;
-  } 
-
-  // return the distance for this axis:
-  return distance;
+  delay(responseDelay);
 }
 
