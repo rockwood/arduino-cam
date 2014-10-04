@@ -6,7 +6,7 @@ uint8_t payload[] = { 0, 0, 0 };
 int statusLed = 13;
 
 Joystick joystick = Joystick(A0, A1, A2);
-Camera cam1 = Camera(0x13A200, 0x40AFDCA7, payload);
+Camera cam1 = Camera(0x0013A200, 0x40AFDCA7, payload);
 
 void setup() {
   Serial.begin(9600);
