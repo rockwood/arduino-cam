@@ -1,18 +1,18 @@
 #include "XBee.h"
-#include "coordinator.h"
+#include "receiver.h"
 
-Coordinator::Coordinator() {
+Receiver::Receiver() {
   XBee _xbee = XBee();
   XBeeResponse _response = XBeeResponse();
   ZBRxResponse _rx = ZBRxResponse();
   ModemStatusResponse _msr = ModemStatusResponse();
 }
 
-void Coordinator::beginSerial(Stream &serial) {
+void Receiver::beginSerial(Stream &serial) {
   _xbee.begin(serial);
 }
 
-void Coordinator::receivePayload(uint8_t payload[]) { 
+void Receiver::receivePayload(uint8_t payload[]) { 
   _xbee.readPacket();
 
   if (_xbee.getResponse().isAvailable()) {

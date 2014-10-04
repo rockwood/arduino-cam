@@ -1,12 +1,12 @@
-#ifndef coordinator_h
-#define coordinator_h
+#ifndef receiver_h
+#define receiver_h
 
 #include "XBee.h"
 
-class Coordinator {
+class Receiver {
 
 public:
-  Coordinator();
+  Receiver();
   void receivePayload(uint8_t payload[]);
   void beginSerial(Stream &serial);
 private:

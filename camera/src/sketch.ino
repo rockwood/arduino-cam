@@ -1,21 +1,21 @@
-#include <Coordinator.h>
+#include <Receiver.h>
 
 uint8_t payload[] = { 0, 0, 0 };
 
-Coordinator coordinator = Coordinator();
+Receiver receiver = Receiver();
 
 int successLed = 3;
 int errorLed = 5;
 
 void setup() {
   Serial.begin(9600);
-  coordinator.beginSerial(Serial);
+  receiver.beginSerial(Serial);
   pinMode(successLed, OUTPUT);
   pinMode(errorLed, OUTPUT);
 }
 
 void loop() {
-  coordinator.receivePayload(payload);
+  receiver.receivePayload(payload);
   flashLed(successLed, 3, payload[0]);
 }
 
