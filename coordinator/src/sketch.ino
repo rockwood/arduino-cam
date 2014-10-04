@@ -1,24 +1,23 @@
 #include <Joystick.h>
-#include <Camera.h>
+#include <Transmitter.h>
 
 uint8_t payload[] = { 0, 0, 0 };
 
 int statusLed = 13;
 
 Joystick joystick = Joystick(A0, A1, A2);
-Camera cam1 = Camera(0x0013A200, 0x40AFDCA7, payload);
+Transmitter cam1Transmitter = Transmitter(0x0013A200, 0x40AFDCA7, payload);
 
 void setup() {
   Serial.begin(9600);
-  cam1.setSerial(Serial);
+  cam1Transmitter.setSerial(Serial);
   pinMode(statusLed, OUTPUT);
 }
 
 void loop() {
   joystick.readInto(payload);
-  cam1.sendPayload();
-  flashLed(statusLed, 3, payload[0]);
-  delay(1000);  
+  cam1Transmitter.sendPayload();
+  delay(1000);
 }
 
 void flashLed(int pin, int times, int wait) {
