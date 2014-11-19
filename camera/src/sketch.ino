@@ -16,7 +16,8 @@ void setup() {
 
 void loop() {
   receiver.receivePayload(payload);
-  flashLed(successLed, 3, payload[0]);
+  printPayload();
+  delay(80); // Must be faster than the coordinator
 }
 
 void flashLed(int pin, int times, int wait) {
@@ -29,4 +30,12 @@ void flashLed(int pin, int times, int wait) {
       delay(wait);
     }
   }
+}
+
+void printPayload() {
+  Serial.print(" X: ");
+  Serial.print(payload[0]);
+  Serial.print(" Y: ");
+  Serial.print(payload[1]);
+  Serial.println();
 }

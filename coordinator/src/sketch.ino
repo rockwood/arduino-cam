@@ -18,7 +18,7 @@ void setup() {
 void loop() {
   joystick.readInto(payload);
   cam1Transmitter.sendPayload();
-  delay(1000);
+  delay(100);
 }
 
 void flashLed(int pin, int times, int wait) {
@@ -31,4 +31,12 @@ void flashLed(int pin, int times, int wait) {
       delay(wait);
     }
   }
+}
+
+void printPayload() {
+  Serial.print(" X: ");
+  Serial.print(payload[0]);
+  Serial.print(" Y: ");
+  Serial.print(payload[1]);
+  Serial.println();
 }
