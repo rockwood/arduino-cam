@@ -9,7 +9,7 @@ int errorLed = 5;
 
 void setup() {
   Serial.begin(9600);
-  receiver.beginSerial(Serial);
+  receiver.beginSerial(Serial1);
   pinMode(successLed, OUTPUT);
   pinMode(errorLed, OUTPUT);
 }

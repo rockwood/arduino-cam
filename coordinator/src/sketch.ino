@@ -10,7 +10,8 @@ Transmitter cam1Transmitter = Transmitter(0x0013A200, 0x40AFDCA7, payload);
 
 void setup() {
   Serial.begin(9600);
-  cam1Transmitter.setSerial(Serial);
+  Serial1.begin(9600);
+  cam1Transmitter.setSerial(Serial1);
   pinMode(statusLed, OUTPUT);
 }
 
