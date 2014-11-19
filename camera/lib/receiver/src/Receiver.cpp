@@ -1,15 +1,19 @@
 #include "XBee.h"
 #include "receiver.h"
 
-Receiver::Receiver() {
-  XBee _xbee = XBee();
-  XBeeResponse _response = XBeeResponse();
-  ZBRxResponse _rx = ZBRxResponse();
-  ModemStatusResponse _msr = ModemStatusResponse();
+Receiver::Receiver():
+  _xbee(XBee()),
+  _response(XBeeResponse()),
+  _rx(ZBRxResponse()),
+  _msr(ModemStatusResponse()) {
 }
 
 void Receiver::beginSerial(Stream &serial) {
   _xbee.begin(serial);
+}
+
+int Receiver::getStatus() {
+  _msr.getStatus();
 }
 
 void Receiver::receivePayload(uint8_t payload[]) { 
