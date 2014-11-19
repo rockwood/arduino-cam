@@ -1,11 +1,11 @@
 #include "XBee.h"
 #include "Transmitter.h"
 
-Transmitter::Transmitter(uint32_t shAddress, uint32_t slAddress, uint8_t *payload) {
-  XBee _xbee = XBee();
-  XBeeAddress64 _address = XBeeAddress64(shAddress, slAddress);
-  ZBTxRequest _request = ZBTxRequest(_address, payload, sizeof(payload));
-  ZBTxStatusResponse _responseStatus = ZBTxStatusResponse();
+Transmitter::Transmitter(uint32_t shAddress, uint32_t slAddress, uint8_t payload[]): 
+  _xbee(XBee()), 
+  _address(XBeeAddress64(shAddress, slAddress)), 
+  _request(ZBTxRequest(_address, payload, sizeof(payload))), 
+  _responseStatus(ZBTxStatusResponse()) {
 }
 
 void Transmitter::setSerial(Stream &serial) {
