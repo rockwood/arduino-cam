@@ -1,23 +1,21 @@
 #include <Receiver.h>
+#include <Ptz.h>
 
 uint8_t payload[] = { 0, 0, 0 };
 
 Receiver receiver = Receiver();
-
-int successLed = 3;
-int errorLed = 5;
+Ptz ptz = Ptz(6, 9, 10, 11);
 
 void setup() {
   Serial.begin(9600);
+  Serial1.begin(9600);
   receiver.beginSerial(Serial1);
-  pinMode(successLed, OUTPUT);
-  pinMode(errorLed, OUTPUT);
 }
 
 void loop() {
   receiver.receivePayload(payload);
-  printPayload();
-  delay(80); // Must be faster than the coordinator
+  ptz.writePayload(payload);
+  debug();
 }
 
 void flashLed(int pin, int times, int wait) {
@@ -32,7 +30,7 @@ void flashLed(int pin, int times, int wait) {
   }
 }
 
-void printPayload() {
+void debug() {
   Serial.print(" X: ");
   Serial.print(payload[0]);
   Serial.print(" Y: ");
