@@ -16,14 +16,6 @@ int Transmitter::getStatus() {
   _responseStatus.getDeliveryStatus();
 }
 
-uint32_t Transmitter::getShAddress() {
-  return _address.getMsb();
-}
-
-uint32_t Transmitter::getSlAddress() {
-  return _address.getLsb();
-}
-
 void Transmitter::sendPayload() {
   _xbee.send(_request);
 

@@ -9,8 +9,6 @@ class Transmitter {
     void setSerial(Stream &serial);  
     void sendPayload();
     int getStatus();
-    uint32_t getShAddress();
-    uint32_t getSlAddress();
   private:
     XBee _xbee;
     XBeeAddress64 _address;
