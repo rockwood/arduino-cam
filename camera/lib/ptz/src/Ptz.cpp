@@ -14,10 +14,39 @@ Ptz::Ptz(int upPin, int downPin, int leftPin, int rightPin):
 }
 
 void Ptz::writePayload(uint8_t *payload) {
-  if (payload[0] > 128) {
-    digitalWrite(_upPin, LOW);
-  } else {
-    digitalWrite(_downPin, LOW);
+  int panDistance = translateDistance(payload[0]);
+  int tiltDistance = translateDistance(payload[1]);
+
+  writePair(panDistance, _leftPin, _rightPin);
+  writePair(tiltDistance, _upPin, _downPin);
+}
+
+int Ptz::translateDistance(uint8_t value) {
+  int range = 255;
+  int threshold = 25;
+  int center = range/2;
+
+  int distance = map(value, 0, range, 0 - range, range);
+
+  if (abs(distance) < threshold) {
+    distance = 0;
+  } 
+
+  return distance;
+}
+
+void Ptz::writePair(int distance, int pin1, int pin2) {
+  if (distance > 0) {
+    analogWrite(pin1, abs(distance));
+    analogWrite(pin2, 0);
+  }
+  else if (distance < 0) {
+    analogWrite(pin1, 0);
+    analogWrite(pin2, abs(distance));
+  }
+  else {
+    analogWrite(pin1, 0);
+    analogWrite(pin2, 0);
   }
 }
 

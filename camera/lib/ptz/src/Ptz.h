@@ -13,6 +13,8 @@ private:
   int _downPin;
   int _leftPin;
   int _rightPin;
+  int translateDistance(uint8_t);
+  void writePair(int, int, int);
 };
 
 #endif
